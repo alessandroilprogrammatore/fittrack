@@ -3,6 +3,7 @@ package gui;
 
 import controller.Controller;
 import model.Hackathon;
+import java.io.File;
 
 import javax.swing.*;
 import java.awt.*;
