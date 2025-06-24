@@ -2,7 +2,6 @@
 package gui;
 
 import controller.Controller;
-import model.Partecipante;
 import model.Team;
 
 import javax.swing.*;
@@ -10,13 +9,11 @@ import java.awt.*;
 
 public class CreaTeamGUI extends JFrame {
     private final Controller controller;
-    private final Partecipante partecipante;
     private final JTextField nomeField = new JTextField(20);
 
-    public CreaTeamGUI(Controller controller, Partecipante p) {
+    public CreaTeamGUI(Controller controller) {
         super("Crea Team");
         this.controller = controller;
-        this.partecipante = p;
         initUI();
     }
 
@@ -48,9 +45,7 @@ public class CreaTeamGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Inserisci un nome per il team.", "Errore di input", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Team t = new Team(nome);
-        t.addPartecipante(partecipante);
-        controller.creaTeam(t);
+        controller.creaTeam(nome);
         JOptionPane.showMessageDialog(this, "Team creato con successo.", "Successo", JOptionPane.INFORMATION_MESSAGE);
         dispose();
     }

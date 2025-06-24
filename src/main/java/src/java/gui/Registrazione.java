@@ -16,7 +16,6 @@ public class Registrazione extends JFrame {
     private final JTextField cognomeField = new JTextField();
     private final JTextField emailField = new JTextField();
     private final JPasswordField pwdField = new JPasswordField();
-    private final JComboBox<String> roleBox = new JComboBox<>(new String[]{"Partecipante","Organizzatore","Giudice"});
 
     public Registrazione(Controller controller) {
         super("Registrazione - Hackathon Manager");
@@ -73,12 +72,7 @@ public class Registrazione extends JFrame {
         pwdField.setPreferredSize(new Dimension(240,36)); pwdField.setFont(new Font("Segoe UI", Font.PLAIN,16));
         formPanel.add(pwdField,gbc);
 
-        gbc.gridx=0; gbc.gridy=4;
-        JLabel roleLbl = new JLabel("Ruolo:"); roleLbl.setFont(new Font("Segoe UI", Font.PLAIN,16)); roleLbl.setForeground(Color.WHITE);
-        formPanel.add(roleLbl,gbc);
-        gbc.gridx=1;
-        roleBox.setPreferredSize(new Dimension(240,36)); roleBox.setFont(new Font("Segoe UI", Font.PLAIN,16));
-        formPanel.add(roleBox,gbc);
+
 
         mainPanel.add(formPanel, BorderLayout.CENTER);
 
@@ -111,12 +105,11 @@ public class Registrazione extends JFrame {
     private void onRegister() {
         String nome = nomeField.getText().trim(), cognome = cognomeField.getText().trim();
         String email = emailField.getText().trim(), pwd = new String(pwdField.getPassword());
-        String ruolo = (String) roleBox.getSelectedItem();
         if (nome.isEmpty() || cognome.isEmpty() || email.isEmpty() || pwd.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Tutti i campi sono obbligatori.", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Utente u = controller.registraUtente(nome, cognome, email, pwd, ruolo);
+        Utente u = controller.registraUtente(nome, cognome, email, pwd, "Partecipante");
         if (u == null) {
             JOptionPane.showMessageDialog(this, "Email già utilizzata.", "Errore", JOptionPane.ERROR_MESSAGE);
         } else {
@@ -127,7 +120,8 @@ public class Registrazione extends JFrame {
 
     private JButton createStyledButton(String text) {
         JButton btn = new JButton(text);
-        btn.setPreferredSize(new Dimension(140, 44)); btn.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        btn.setPreferredSize(new Dimension(180, 52));
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
         btn.setBackground(new Color(52, 152, 219)); btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false); btn.setOpaque(true); btn.setContentAreaFilled(true);
         return btn;

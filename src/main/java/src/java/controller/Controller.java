@@ -1,4 +1,5 @@
-// File: src/main/java/controller/Controller.java
+
+// File: Controller.java
 package controller;
 
 import model.*;
@@ -73,22 +74,16 @@ public class Controller implements Serializable {
 
         Utente u;
         switch (ruolo) {
-            case "Organizzatore":
-                u = new Organizzatore(nome, cognome, null, email, password);
-                break;
-            case "Giudice":
-                u = new Giudice(nome, cognome, null, email, password);
-                break;
-            default:
-                u = new Partecipante(nome, cognome, null, email, password);
-                break;
+            case "Organizzatore": u = new Organizzatore(nome, cognome, null, email, password); break;
+            case "Giudice":      u = new Giudice(nome, cognome, null, email, password);      break;
+            default:               u = new Partecipante(nome, cognome, null, email, password); break;
         }
         utenti.add(u);
         return u;
     }
 
     /**
-     * Esegue login con email e password.
+     * Login con email e password.
      */
     public Utente login(String email, String pwd) {
         Optional<Utente> opt = utenti.stream()
@@ -101,29 +96,8 @@ public class Controller implements Serializable {
         return null;
     }
 
-    /**
-     * Restituisce l'utente attualmente autenticato.
-     */
     public Utente getCurrentUser() {
         return currentUser;
-    }
-
-    /**
-     * Restituisce la lista di tutti gli Utenti registrati.
-     *
-     * @return lista immutabile di Utente
-     */
-    public List<Utente> getUtenti() {
-        return Collections.unmodifiableList(utenti);
-    }
-
-    /**
-     * Imposta l'utente corrente (bypass login).
-     *
-     * @param user Utente da impostare come currentUser
-     */
-    public void setCurrentUser(Utente user) {
-        this.currentUser = user;
     }
 
     /**
@@ -144,6 +118,18 @@ public class Controller implements Serializable {
 
     // DOCUMENTI
     public void caricaDocumento(Documento d) { docs.add(d); }
+
+    /**
+     * Carica un nuovo documento dal percorso fornito associandolo
+     * all'hackathon indicato.
+     */
+    public Documento caricaDocumento(String path, Hackathon hackathon) {
+        Documento doc = new Documento(new File(path));
+        doc.setHackathon(hackathon);
+        docs.add(doc);
+        return doc;
+    }
+
     public List<Documento> getDocumenti() { return Collections.unmodifiableList(docs); }
     public void modificaDocumento(Documento d, String contenuto) { d.modificaDocumento(contenuto); }
     public void cancellaDocumento(Documento d) { docs.remove(d); }
@@ -152,6 +138,16 @@ public class Controller implements Serializable {
     public void valutaTeam(Voto voto) {
         if (currentUser instanceof Giudice) voti.add(voto);
     }
+
+    /**
+     * Invia una votazione al team indicato.
+     */
+    public void inviaVotazione(Team team, int punteggio) {
+        if (currentUser instanceof Giudice) {
+            voti.add(new Voto(team, punteggio));
+        }
+    }
+
     public List<Voto> getVoti() {
         if (currentUser instanceof Giudice) return Collections.unmodifiableList(voti);
         return Collections.emptyList();
@@ -183,6 +179,19 @@ public class Controller implements Serializable {
             teams.add(t);
         }
     }
+
+    /**
+     * Crea un team con il nome indicato aggiungendo l'utente corrente.
+     */
+    public Team creaTeam(String nome) {
+        if (currentUser instanceof Partecipante) {
+            Team t = new Team(nome);
+            t.addPartecipante((Partecipante) currentUser);
+            teams.add(t);
+            return t;
+        }
+        return null;
+    }
     public List<Team> getTeams(Partecipante p) {
         if (currentUser instanceof Partecipante && currentUser.equals(p)) {
             return teams.stream()
@@ -202,6 +211,27 @@ public class Controller implements Serializable {
             h.setOrganizzatore((Organizzatore) currentUser);
             hacks.add(h);
         }
+    }
+
+    /**
+     * Crea e registra un nuovo hackathon dai parametri forniti.
+     */
+    public Hackathon creaHackathon(String titolo, String sede,
+                                  LocalDateTime inizio, LocalDateTime fine,
+                                  int maxPartecipanti, int dimensioneTeam) {
+        if (currentUser instanceof Organizzatore) {
+            Hackathon h = new Hackathon();
+            h.setTitolo(titolo);
+            h.setSede(sede);
+            h.setDataInizio(inizio);
+            h.setDataFine(fine);
+            h.setMassimoPartecipanti(maxPartecipanti);
+            h.setDimensioneTeam(dimensioneTeam);
+            h.setOrganizzatore((Organizzatore) currentUser);
+            hacks.add(h);
+            return h;
+        }
+        return null;
     }
     public List<Hackathon> getHackathons(Organizzatore o) {
         if (currentUser instanceof Organizzatore && currentUser.equals(o)) {

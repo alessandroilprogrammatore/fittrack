@@ -3,7 +3,6 @@
 
 import controller.Controller;
 import model.Team;
-import model.Voto;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
@@ -116,8 +115,7 @@ public class ValutaTeamGUI extends JFrame {
         try {
             int score = Integer.parseInt(input);
             if (score < 0 || score > 100) throw new NumberFormatException();
-            // Usa il costruttore corretto di Voto
-            controller.valutaTeam(new Voto(team, score));
+            controller.inviaVotazione(team, score);
             JOptionPane.showMessageDialog(this, "Voto salvato con successo!",
                     "Fatto", JOptionPane.INFORMATION_MESSAGE);
             populateTable();
