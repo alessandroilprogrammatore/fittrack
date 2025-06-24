@@ -15,3 +15,9 @@ build/
 # IDE
 .vscode/
 .idea/
+
+# Binary artifacts
+*.zip
+*.pdf
+*.vpp
+*.dat
