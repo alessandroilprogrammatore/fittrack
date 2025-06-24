@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Node
+node_modules/
+build/
+.env
+
+# DB
+*.db
+
+# IDE
+.vscode/
+.idea/
+
+# Archives
+*.zip
+*.pdf
+*.vpp
+
+/data/
+target/
