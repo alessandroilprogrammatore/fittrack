@@ -3,7 +3,6 @@ package gui;
 
 import controller.Controller;
 import model.Hackathon;
-import model.Organizzatore;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +14,6 @@ public class CreaHackathonGUI extends JFrame {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private final Controller controller;
-    private final Organizzatore organizzatore;
     private final JTextField titleField = new JTextField(20);
     private final JTextField locationField = new JTextField(20);
     private final JTextField startField = new JTextField(20);
@@ -23,10 +21,9 @@ public class CreaHackathonGUI extends JFrame {
     private final JSpinner maxParticipantsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
     private final JSpinner teamSizeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
 
-    public CreaHackathonGUI(Controller controller, Organizzatore org) {
+    public CreaHackathonGUI(Controller controller) {
         super("Crea Hackathon");
         this.controller = controller;
-        this.organizzatore = org;
         initUI();
     }
 
@@ -72,16 +69,13 @@ public class CreaHackathonGUI extends JFrame {
 
     private void onCreate() {
         try {
-            Hackathon hackathon = new Hackathon();
-            hackathon.setTitolo(titleField.getText().trim());
-            hackathon.setSede(locationField.getText().trim());
-            hackathon.setDataInizio(LocalDateTime.parse(startField.getText().trim(), DATE_FORMAT));
-            hackathon.setDataFine(LocalDateTime.parse(endField.getText().trim(), DATE_FORMAT));
-            hackathon.setMassimoPartecipanti((Integer) maxParticipantsSpinner.getValue());
-            hackathon.setDimensioneTeam((Integer) teamSizeSpinner.getValue());
-            hackathon.setOrganizzatore(organizzatore);
-
-            controller.creaHackathon(hackathon);
+            controller.creaHackathon(
+                    titleField.getText().trim(),
+                    locationField.getText().trim(),
+                    LocalDateTime.parse(startField.getText().trim(), DATE_FORMAT),
+                    LocalDateTime.parse(endField.getText().trim(), DATE_FORMAT),
+                    (Integer) maxParticipantsSpinner.getValue(),
+                    (Integer) teamSizeSpinner.getValue());
             JOptionPane.showMessageDialog(this, "Hackathon creato con successo.", "Successo", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } catch (DateTimeParseException ex) {

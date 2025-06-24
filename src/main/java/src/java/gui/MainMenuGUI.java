@@ -1,173 +1,124 @@
-// File: src/main/java/gui/MainMenuGUI.java
+// File: gui/MainMenuGUI.java
 package gui;
 
 import controller.Controller;
 import model.Utente;
+import model.Partecipante;
 import model.Organizzatore;
 import model.Giudice;
-import model.Partecipante;
 
 import javax.swing.*;
+import javax.swing.border.AbstractBorder;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import javax.swing.Box;
 
 /**
- * Finestra principale dell'applicazione,
- * stile simile alla schermata di login con sfondo gradiente,
- * e slider marquee più fluido.
+ * Finestra principale dopo il login: mostra azioni disponibili in base al ruolo
  */
 public class MainMenuGUI extends JFrame {
-    private final Controller controller;
-    private Utente currentUser;
-
     public MainMenuGUI(Controller controller) {
-        // Look and Feel Nimbus
+        super("Hackathon Manager");
+        initUI(controller);
+    }
+
+    private void initUI(Controller controller) {
+        // Look & Feel di sistema
         try {
-            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {}
 
-        this.controller = controller;
-        this.currentUser = controller.getCurrentUser();
-
-        setTitle("Hackathon Manager");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 700);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(600, 400);
         setLocationRelativeTo(null);
 
-        buildUI();
-    }
-
-    private void buildUI() {
-        GradientPanel container = new GradientPanel();
-        container.setLayout(new BorderLayout());
-        container.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        // Pannello principale
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(new Color(45, 62, 80));
 
         // Titolo
-        JLabel titleLabel = new JLabel("Hackathon Manager");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 40));
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        titleLabel.setForeground(Color.WHITE);
-        container.add(titleLabel, BorderLayout.NORTH);
+        JLabel title = new JLabel("Hackathon Manager", SwingConstants.CENTER);
+        title.setFont(new Font("SansSerif", Font.BOLD, 32));
+        title.setForeground(Color.WHITE);
+        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        mainPanel.add(title, BorderLayout.NORTH);
 
-        // Pulsanti
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-        buttonPanel.add(Box.createVerticalGlue());
+        // Pannello dei bottoni
+        JPanel btnPanel = new JPanel();
+        btnPanel.setOpaque(false);
+        btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.Y_AXIS));
+        btnPanel.setBorder(BorderFactory.createEmptyBorder(20, 150, 20, 150));
 
-        // Login e Registrazione sempre visibili
-        addButton(buttonPanel, "Login", e -> swapToLogin());
-        addButton(buttonPanel, "Registrazione", e -> swapToRegister());
+        Utente u = controller.getCurrentUser();
+        if (u instanceof Partecipante) {
+            JButton creaTeam = createStyledButton("Crea Team");
+            creaTeam.addActionListener(e -> new CreaTeamGUI(controller));
+            btnPanel.add(creaTeam);
+            btnPanel.add(Box.createVerticalStrut(10));
 
-        if (currentUser != null) {
-            // Solo dopo login: Dashboard e altre funzioni
-            addSeparator(buttonPanel);
-            addButton(buttonPanel, "Dashboard", e -> new Dashboard(currentUser, controller).setVisible(true));
-            addButton(buttonPanel, "Profilo", e -> new ProfiloUtenteGUI(currentUser, controller).setVisible(true));
-            if (currentUser instanceof Organizzatore) {
-                addButton(buttonPanel, "Crea Hackathon", e -> new CreaHackathonGUI(controller, (Organizzatore) currentUser).setVisible(true));
-            }
-            if (currentUser instanceof Partecipante) {
-                addButton(buttonPanel, "Crea Team", e -> new CreaTeamGUI(controller, (Partecipante) currentUser).setVisible(true));
-                addButton(buttonPanel, "I miei Inviti", e -> new InvitiPartecipanteGUI((Partecipante) currentUser, controller).setVisible(true));
-            }
-            if (currentUser instanceof Giudice) {
-                addButton(buttonPanel, "Valuta Team", e -> new ValutaTeamGUI(controller).setVisible(true));
-            }
-            addSeparator(buttonPanel);
-            addButton(buttonPanel, "Logout", e -> {
-                controller.setCurrentUser(null);
-                currentUser = null;
-                buildUI();
-            });
+            JButton inviti = createStyledButton("Inviti");
+            inviti.addActionListener(e -> new InvitiPartecipanteGUI((Partecipante) u, controller));
+            btnPanel.add(inviti);
+
+        } else if (u instanceof Organizzatore) {
+            JButton creaHack = createStyledButton("Crea Hackathon");
+            creaHack.addActionListener(e -> new CreaHackathonGUI(controller));
+            btnPanel.add(creaHack);
+
+        } else if (u instanceof Giudice) {
+            JButton valuta = createStyledButton("Valuta Team");
+            valuta.addActionListener(e -> new ValutaTeamGUI(controller));
+            btnPanel.add(valuta);
         }
 
-        buttonPanel.add(Box.createVerticalGlue());
+        btnPanel.add(Box.createVerticalStrut(20));
+        JButton logout = createStyledButton("Logout");
+        logout.addActionListener(e -> {
+            new SignIn(controller);
+            dispose();
+        });
+        btnPanel.add(logout);
 
-        JScrollPane scroll = new JScrollPane(buttonPanel);
-        scroll.setOpaque(false);
-        scroll.getViewport().setOpaque(false);
-        scroll.setBorder(null);
-        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        container.add(scroll, BorderLayout.CENTER);
+        mainPanel.add(btnPanel, BorderLayout.CENTER);
 
-        // Marquee in basso
-        MarqueePanel marqueePanel = new MarqueePanel(
-                "Progetto Realizzato da Alessandro Minopoli, Daniele Megna e Simone Iodice - Federico II, prof. PORFIRIO TRAMONTANA"
-        );
-        container.add(marqueePanel, BorderLayout.SOUTH);
+        // Footer
+        JLabel footer = new JLabel("© 2025 Hackathon Manager", SwingConstants.CENTER);
+        footer.setForeground(Color.LIGHT_GRAY);
+        footer.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        mainPanel.add(footer, BorderLayout.SOUTH);
 
-        setContentPane(container);
-        revalidate(); repaint();
+        setContentPane(mainPanel);
+        setVisible(true);
     }
 
-    private void swapToLogin() {
-        dispose();
-        new SignIn(controller).setVisible(true);
+    /**
+     * Crea un JButton con stile personalizzato
+     */
+    private JButton createStyledButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        btn.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        btn.setBackground(new Color(52, 152, 219));
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setBorder(new RoundedBorder(10));
+        btn.setOpaque(true);
+        btn.setContentAreaFilled(true);
+        return btn;
     }
 
-    private void swapToRegister() {
-        dispose();
-        new Registrazione(controller).setVisible(true);
-    }
-
-    private void addButton(JPanel panel, String text, ActionListener action) {
-        JButton button = new JButton(text);
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMaximumSize(new Dimension(300, 60));
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 22));
-        button.setBackground(new Color(255, 255, 255, 220));
-        button.setFocusPainted(false);
-        button.addActionListener(action);
-        panel.add(button);
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
-    }
-
-    private void addSeparator(JPanel panel) {
-        panel.add(Box.createVerticalStrut(15));
-        JSeparator sep = new JSeparator(SwingConstants.HORIZONTAL);
-        sep.setForeground(Color.WHITE);
-        sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 2));
-        panel.add(sep);
-        panel.add(Box.createVerticalStrut(15));
-    }
-
-    // Panel con sfondo gradiente
-    private static class GradientPanel extends JPanel {
-        @Override protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
+    /**
+     * Bordo arrotondato per i bottoni
+     */
+    private static class RoundedBorder extends AbstractBorder {
+        private final int radius;
+        public RoundedBorder(int radius) { this.radius = radius; }
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
             Graphics2D g2 = (Graphics2D) g;
-            int w = getWidth(), h = getHeight();
-            GradientPaint gp = new GradientPaint(0, 0, new Color(10, 30, 90), 0, h, new Color(30, 144, 255));
-            g2.setPaint(gp);
-            g2.fillRect(0, 0, w, h);
-        }
-    }
-
-    // Panel per marquee fluido
-    private static class MarqueePanel extends JPanel {
-        private final String text;
-        private int x;
-        private final int speed = 2;
-        public MarqueePanel(String text) {
-            this.text = "   " + text + "   ";
-            setPreferredSize(new Dimension(0, 30));
-            setBackground(new Color(20, 20, 20));
-            Timer timer = new Timer(25, e -> {
-                x -= speed;
-                if (x + getFontMetrics(getFont()).stringWidth(this.text) < 0) x = getWidth();
-                repaint();
-            });
-            timer.start();
-        }
-        @Override protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(Color.WHITE);
-            g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            g2.drawString(this.text, x, getHeight() - 8);
+            g2.setStroke(new BasicStroke(2));
+            g2.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
         }
     }
 }
