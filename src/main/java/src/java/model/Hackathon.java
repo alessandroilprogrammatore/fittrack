@@ -4,8 +4,10 @@ package model;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.io.Serializable;
 
-public class Hackathon {
+public class Hackathon implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String titolo;
     private String sede;
     private LocalDateTime dataInizio;
