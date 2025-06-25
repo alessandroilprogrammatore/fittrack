@@ -6,6 +6,7 @@ import model.Hackathon;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 public class DocumentoGUI extends JFrame {
     private final Controller controller;
