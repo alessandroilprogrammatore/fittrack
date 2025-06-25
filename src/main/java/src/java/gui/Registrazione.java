@@ -3,7 +3,6 @@
 package gui;
 
 import controller.Controller;
-import model.Utente;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -119,8 +118,7 @@ public class Registrazione extends JFrame {
             return;
         }
         String ruolo = (String) ruoloCombo.getSelectedItem();
-        Utente u = controller.registraUtente(nome, cognome, email, pwd, ruolo);
-        if (u == null) {
+        if (controller.registraUtente(nome, cognome, email, pwd, ruolo) == null) {
             JOptionPane.showMessageDialog(this, "Email già utilizzata.", "Errore", JOptionPane.ERROR_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Registrazione avvenuta.", "Successo", JOptionPane.INFORMATION_MESSAGE);
@@ -132,7 +130,7 @@ public class Registrazione extends JFrame {
         JButton btn = new JButton(text);
         btn.setPreferredSize(new Dimension(180, 52));
         btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        btn.setBackground(new Color(52, 152, 219)); btn.setForeground(Color.WHITE);
+        btn.setBackground(new Color(70, 130, 180)); btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false); btn.setOpaque(true); btn.setContentAreaFilled(true);
         return btn;
     }
