@@ -3,6 +3,7 @@
 package gui;
 
 import controller.Controller;
+import model.Utente;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -118,7 +119,8 @@ public class Registrazione extends JFrame {
             return;
         }
         String ruolo = (String) ruoloCombo.getSelectedItem();
-        if (controller.registraUtente(nome, cognome, email, pwd, ruolo) == null) {
+        Utente u = controller.registraUtente(nome, cognome, email, pwd, ruolo);
+        if (u == null) {
             JOptionPane.showMessageDialog(this, "Email già utilizzata.", "Errore", JOptionPane.ERROR_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Registrazione avvenuta.", "Successo", JOptionPane.INFORMATION_MESSAGE);
