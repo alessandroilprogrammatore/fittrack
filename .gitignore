@@ -22,3 +22,7 @@ build/
 *.pdf
 *.vpp
 *.dat
+
+# Java
+*.class
+/target/
