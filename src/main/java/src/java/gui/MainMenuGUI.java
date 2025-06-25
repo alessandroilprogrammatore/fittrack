@@ -6,6 +6,7 @@ import model.Utente;
 import model.Partecipante;
 import model.Organizzatore;
 import model.Giudice;
+import model.Team;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
@@ -49,9 +50,16 @@ public class MainMenuGUI extends JFrame {
 
         Utente u = controller.getCurrentUser();
         if (u instanceof Partecipante) {
-            JButton creaTeam = createStyledButton("Crea Team");
-            creaTeam.addActionListener(e -> new CreaTeamGUI(controller));
-            btnPanel.add(creaTeam);
+            Team myTeam = controller.getTeamOfCurrentUser();
+            if (myTeam == null) {
+                JButton creaTeam = createStyledButton("Crea Team");
+                creaTeam.addActionListener(e -> new CreaTeamGUI(controller));
+                btnPanel.add(creaTeam);
+            } else {
+                JButton teamBtn = createStyledButton("Il mio Team");
+                teamBtn.addActionListener(e -> new TeamGUI(controller));
+                btnPanel.add(teamBtn);
+            }
             btnPanel.add(Box.createVerticalStrut(10));
 
             JButton inviti = createStyledButton("Inviti");
@@ -97,7 +105,7 @@ public class MainMenuGUI extends JFrame {
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         btn.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        btn.setBackground(new Color(52, 152, 219));
+        btn.setBackground(new Color(70, 130, 180));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setBorder(new RoundedBorder(10));

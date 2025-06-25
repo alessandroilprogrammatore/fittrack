@@ -182,16 +182,50 @@ public class Controller implements Serializable {
     }
 
     /**
+     * Restituisce il team a cui appartiene l'utente corrente, se presente.
+     */
+    public Team getTeamOfCurrentUser() {
+        if (currentUser instanceof Partecipante) {
+            for (Team t : teams) {
+                if (t.getPartecipanti().contains(currentUser)) return t;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Crea un team con il nome indicato aggiungendo l'utente corrente.
+     * Non permette nomi duplicati né di creare più di un team.
      */
     public Team creaTeam(String nome) {
         if (currentUser instanceof Partecipante) {
+            // gia membro?
+            for (Team t : teams) {
+                if (t.getPartecipanti().contains(currentUser)) return null;
+                if (t.getNome().equalsIgnoreCase(nome)) return null;
+            }
             Team t = new Team(nome);
             t.addPartecipante((Partecipante) currentUser);
             teams.add(t);
             return t;
         }
         return null;
+    }
+
+    /**
+     * Aggiunge un partecipante al team se esiste ed il team ha meno di 4 membri.
+     */
+    public boolean aggiungiMembro(Team team, String email) {
+        if (!(currentUser instanceof Partecipante)) return false;
+        if (team.getPartecipanti().size() >= 4) return false;
+        Optional<Utente> opt = utenti.stream()
+                .filter(u -> u instanceof Partecipante && u.getEmail().equalsIgnoreCase(email))
+                .findFirst();
+        if (opt.isPresent() && !team.getPartecipanti().contains(opt.get())) {
+            team.addPartecipante((Partecipante) opt.get());
+            return true;
+        }
+        return false;
     }
     public List<Team> getTeams(Partecipante p) {
         if (currentUser instanceof Partecipante && currentUser.equals(p)) {
