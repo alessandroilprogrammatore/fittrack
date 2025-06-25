@@ -16,6 +16,8 @@ public class Registrazione extends JFrame {
     private final JTextField cognomeField = new JTextField();
     private final JTextField emailField = new JTextField();
     private final JPasswordField pwdField = new JPasswordField();
+    private final JComboBox<String> ruoloCombo = new JComboBox<>(
+            new String[]{"Partecipante", "Organizzatore", "Giudice"});
 
     public Registrazione(Controller controller) {
         super("Registrazione - Hackathon Manager");
@@ -72,6 +74,13 @@ public class Registrazione extends JFrame {
         pwdField.setPreferredSize(new Dimension(240,36)); pwdField.setFont(new Font("Segoe UI", Font.PLAIN,16));
         formPanel.add(pwdField,gbc);
 
+        gbc.gridx=0; gbc.gridy=4;
+        JLabel ruoloLbl = new JLabel("Ruolo:"); ruoloLbl.setFont(new Font("Segoe UI", Font.PLAIN,16)); ruoloLbl.setForeground(Color.WHITE);
+        formPanel.add(ruoloLbl,gbc);
+        gbc.gridx=1;
+        ruoloCombo.setPreferredSize(new Dimension(240,36)); ruoloCombo.setFont(new Font("Segoe UI", Font.PLAIN,16));
+        formPanel.add(ruoloCombo,gbc);
+
 
 
         mainPanel.add(formPanel, BorderLayout.CENTER);
@@ -109,7 +118,8 @@ public class Registrazione extends JFrame {
             JOptionPane.showMessageDialog(this, "Tutti i campi sono obbligatori.", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Utente u = controller.registraUtente(nome, cognome, email, pwd, "Partecipante");
+        String ruolo = (String) ruoloCombo.getSelectedItem();
+        Utente u = controller.registraUtente(nome, cognome, email, pwd, ruolo);
         if (u == null) {
             JOptionPane.showMessageDialog(this, "Email già utilizzata.", "Errore", JOptionPane.ERROR_MESSAGE);
         } else {
