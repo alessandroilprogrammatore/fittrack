@@ -3,11 +3,13 @@
 package model;
 
 import java.util.Objects;
+import java.io.Serializable;
 
 /**
  * Rappresenta un voto assegnato a un team.
  */
-public class Voto {
+public class Voto implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Team team;
     private final int punteggio;
 

@@ -3,11 +3,13 @@
 package model;
 
 import java.time.LocalDate;
+import java.io.Serializable;
 
 /**
  * Invito ad un hackathon per un partecipante.
  */
-public class Invito {
+public class Invito implements Serializable {
+    private static final long serialVersionUID = 1L;
     public enum Stato { INVIATO, ACCETTATO, RIFIUTATO }
 
     private final Hackathon hackathon;
