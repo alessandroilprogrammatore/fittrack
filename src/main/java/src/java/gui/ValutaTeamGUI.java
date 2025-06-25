@@ -111,16 +111,18 @@ public class ValutaTeamGUI extends JFrame {
         if (team == null) return;
 
         String input = JOptionPane.showInputDialog(this,
-                "Inserisci il voto per \"" + teamName + "\" (0-100):", "0");
+                "Inserisci il voto per \"" + teamName + "\" (0-10):", "0");
         try {
+            if (input == null) return; // utente ha annullato
             int score = Integer.parseInt(input);
-            if (score < 0 || score > 100) throw new NumberFormatException();
+            if (score < 0 || score > 10) throw new NumberFormatException();
             controller.inviaVotazione(team, score);
             JOptionPane.showMessageDialog(this, "Voto salvato con successo!",
                     "Fatto", JOptionPane.INFORMATION_MESSAGE);
             populateTable();
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Valore non valido. Inserisci un numero tra 0 e 100.",
+            JOptionPane.showMessageDialog(this,
+                    "Valore non valido. Inserisci un numero tra 0 e 10.",
                     "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
