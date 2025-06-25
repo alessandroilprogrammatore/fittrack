@@ -56,9 +56,9 @@ public class ValutaTeamGUI extends JFrame {
         teamTable.setRowHeight(30);
         teamTable.setFont(new Font("SansSerif", Font.PLAIN, 16));
         teamTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 16));
-        teamTable.getTableHeader().setBackground(new Color(52, 152, 219));
+        teamTable.getTableHeader().setBackground(new Color(70, 130, 180));
         teamTable.getTableHeader().setForeground(Color.WHITE);
-        teamTable.setSelectionBackground(new Color(52, 152, 219));
+        teamTable.setSelectionBackground(new Color(70, 130, 180));
         JScrollPane scrollPane = new JScrollPane(teamTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2, true));
         mainPanel.add(scrollPane, BorderLayout.CENTER);
@@ -130,7 +130,7 @@ public class ValutaTeamGUI extends JFrame {
     private JButton createStyledButton(String text) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        btn.setBackground(new Color(52, 152, 219));
+        btn.setBackground(new Color(70, 130, 180));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setBorder(new RoundedBorder(10));

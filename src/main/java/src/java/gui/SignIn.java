@@ -2,7 +2,6 @@
 package gui;
 
 import controller.Controller;
-import model.Utente;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -108,8 +107,7 @@ public class SignIn extends JFrame {
     private void onLogin() {
         String email = emailField.getText().trim();
         String pwd = String.valueOf(pwdField.getPassword());
-        Utente u = controller.login(email, pwd);
-        if (u == null) {
+        if (controller.login(email, pwd) == null) {
             JOptionPane.showMessageDialog(this,
                     "Credenziali non valide.", "Errore", JOptionPane.ERROR_MESSAGE);
         } else {
@@ -124,7 +122,7 @@ public class SignIn extends JFrame {
         JButton btn = new JButton(text);
         btn.setPreferredSize(new Dimension(140, 44));
         btn.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        btn.setBackground(new Color(52, 152, 219));
+        btn.setBackground(new Color(70, 130, 180));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setOpaque(true);
