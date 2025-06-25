@@ -17,6 +17,7 @@ build/
 .idea/
 
 # Binary artifacts
+# Ensure generated archives stay out of version control
 *.zip
 *.pdf
 *.vpp
