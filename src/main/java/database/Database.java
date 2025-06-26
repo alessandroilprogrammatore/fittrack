@@ -8,13 +8,8 @@ import java.sql.SQLException;
  * Utility class for obtaining JDBC connections.
  */
 public class Database {
-    static {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+    // JDBC 4 drivers such as PostgreSQL's automatically register themselves.
+    // No manual Class.forName("org.postgresql.Driver") call is required.
 
     private Database() {}
 
