@@ -28,4 +28,6 @@ javac -d out $(find src/main/java -name "*.java")
 java -cp out model.Main
 ```
 
-Application state is stored under the `data/` directory so it is preserved between executions.
+The application now uses a PostgreSQL database. Configure the connection using the
+`DB_URL`, `DB_USER` and `DB_PASS` environment variables if the defaults do not
+match your setup.
