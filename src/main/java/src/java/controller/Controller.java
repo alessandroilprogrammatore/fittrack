@@ -3,36 +3,30 @@
 package controller;
 
 import model.*;
-import dao.UtenteDAO;
-import dao.TeamDAO;
-import dao.postgres.PostgresUtenteDAO;
-import dao.postgres.PostgresTeamDAO;
-import java.io.File;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Controller centralizza la logica applicativa e interagisce con il database
- * tramite oggetti DAO.
+ * Controller centralizza la logica applicativa e persistenza in file.
  */
-public class Controller {
+public class Controller implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     // Collezioni di dominio
-    private UtenteDAO utenteDAO;
+    private List<Utente> utenti;
     private List<Documento> docs;
     private List<Voto> voti;
     private List<Invito> inviti;
-    private TeamDAO teamDAO;
     private List<Team> teams;
     private List<Hackathon> hacks;
 
     private transient Utente currentUser;
 
     public Controller() {
-        this.utenteDAO = new PostgresUtenteDAO();
-        this.teamDAO = new PostgresTeamDAO();
+        this.utenti = new ArrayList<>();
         this.docs    = new ArrayList<>();
         this.voti    = new ArrayList<>();
         this.inviti  = new ArrayList<>();
@@ -40,7 +34,32 @@ public class Controller {
         this.hacks   = new ArrayList<>();
     }
 
+    /**
+     * Carica stato da file, o nuovo controller se non esiste.
+     */
+    public static Controller loadState() {
+        File file = new File("data/state.dat");
+        if (!file.exists()) return new Controller();
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            return (Controller) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return new Controller();
+        }
+    }
 
+    /**
+     * Salva stato su file.
+     */
+    public void saveState() {
+        new File("data").mkdirs();
+        try (ObjectOutputStream out = new ObjectOutputStream(
+                new FileOutputStream("data/state.dat"))) {
+            out.writeObject(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Registra un nuovo utente con ruolo: Partecipante, Organizzatore o Giudice.
@@ -50,12 +69,9 @@ public class Controller {
                                  String email,
                                  String password,
                                  String ruolo) {
-        try {
-            Utente exists = utenteDAO.findByEmail(email);
-            if (exists != null) return null;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        boolean exists = utenti.stream()
+                .anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
+        if (exists) return null;
 
         Utente u;
         switch (ruolo) {
@@ -63,11 +79,7 @@ public class Controller {
             case "Giudice":      u = new Giudice(nome, cognome, null, email, password);      break;
             default:               u = new Partecipante(nome, cognome, null, email, password); break;
         }
-        try {
-            utenteDAO.save(u);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        utenti.add(u);
         return u;
     }
 
@@ -75,16 +87,14 @@ public class Controller {
      * Login con email e password.
      */
     public Utente login(String email, String pwd) {
-        try {
-            Utente u = utenteDAO.findByEmail(email);
-            if (u != null && u.checkCredentials(email, pwd)) {
-                currentUser = u;
-                return currentUser;
-            }
-            return null;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        Optional<Utente> opt = utenti.stream()
+                .filter(u -> u.checkCredentials(email, pwd))
+                .findFirst();
+        if (opt.isPresent()) {
+            currentUser = opt.get();
+            return currentUser;
         }
+        return null;
     }
 
     public Utente getCurrentUser() {
@@ -168,11 +178,6 @@ public class Controller {
         if (currentUser instanceof Partecipante) {
             t.addPartecipante((Partecipante) currentUser);
             teams.add(t);
-            try {
-                teamDAO.save(t);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 
@@ -194,23 +199,14 @@ public class Controller {
      */
     public Team creaTeam(String nome) {
         if (currentUser instanceof Partecipante) {
+            // gia membro?
             for (Team t : teams) {
                 if (t.getPartecipanti().contains(currentUser)) return null;
                 if (t.getNome().equalsIgnoreCase(nome)) return null;
             }
-            try {
-                if (teamDAO.findByName(nome) != null) return null;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
             Team t = new Team(nome);
             t.addPartecipante((Partecipante) currentUser);
             teams.add(t);
-            try {
-                teamDAO.save(t);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
             return t;
         }
         return null;
@@ -222,16 +218,14 @@ public class Controller {
     public boolean aggiungiMembro(Team team, String email) {
         if (!(currentUser instanceof Partecipante)) return false;
         if (team.getPartecipanti().size() >= 4) return false;
-        try {
-            Utente u = utenteDAO.findByEmail(email);
-            if (u instanceof Partecipante && !team.getPartecipanti().contains(u)) {
-                team.addPartecipante((Partecipante) u);
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        Optional<Utente> opt = utenti.stream()
+                .filter(u -> u instanceof Partecipante && u.getEmail().equalsIgnoreCase(email))
+                .findFirst();
+        if (opt.isPresent() && !team.getPartecipanti().contains(opt.get())) {
+            team.addPartecipante((Partecipante) opt.get());
+            return true;
         }
+        return false;
     }
     public List<Team> getTeams(Partecipante p) {
         if (currentUser instanceof Partecipante && currentUser.equals(p)) {

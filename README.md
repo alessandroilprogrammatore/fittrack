@@ -25,11 +25,7 @@ If you prefer a manual compilation, use `javac`:
 ```bash
 mkdir -p out
 javac -d out $(find src/main/java -name "*.java")
-# Include the PostgreSQL driver when running manually
-java -cp out:$HOME/.m2/repository/org/postgresql/postgresql/42.7.2/postgresql-42.7.2.jar model.Main
+java -cp out model.Main
 ```
 
-The application now uses a PostgreSQL database. Configure the connection using the
-`DB_URL`, `DB_USER` and `DB_PASS` environment variables if the defaults do not
-match your setup. Ensure that the PostgreSQL JDBC driver is on the classpath when
-running the application.
+Application state is stored under the `data/` directory so it is preserved between executions.
