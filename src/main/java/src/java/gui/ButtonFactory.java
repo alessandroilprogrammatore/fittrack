@@ -16,8 +16,8 @@ public final class ButtonFactory {
         JButton btn = new JButton(text);
         btn.setFont(new Font("SansSerif", Font.BOLD, 16));
         btn.setForeground(Color.WHITE);
-        // Colore più acceso per garantire visibilità su sfondi scuri
-        Color base = new Color(52, 152, 219);
+        // Blu brillante per un contrasto maggiore
+        Color base = new Color(0, 123, 255);
         btn.setBackground(base);
         btn.setFocusPainted(false);
         btn.setBorder(new RoundedBorder(10));
