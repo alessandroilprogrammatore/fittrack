@@ -29,3 +29,4 @@ java -cp out model.Main
 ```
 
 Application state is stored under the `data/` directory so it is preserved between executions.
+All persistence relies solely on these serialized files; no database is required or used.
