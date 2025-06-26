@@ -5,6 +5,7 @@ import controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
+import gui.ButtonFactory;
 
 public class CreaTeamGUI extends JFrame {
     private final Controller controller;
@@ -29,7 +30,7 @@ public class CreaTeamGUI extends JFrame {
         panel.add(nomeField, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
-        JButton createButton = new JButton("Crea Team");
+        JButton createButton = ButtonFactory.createButton("Crea Team");
         createButton.addActionListener(e -> onCreate());
         panel.add(createButton, gbc);
 

@@ -5,10 +5,10 @@ import controller.Controller;
 import model.Team;
 
 import javax.swing.*;
-import javax.swing.border.AbstractBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.stream.Collectors;
+import gui.ButtonFactory;
 
 /**
  * Finestra per la valutazione dei team: interfaccia più moderna ed elegante
@@ -67,11 +67,11 @@ public class ValutaTeamGUI extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         buttonPanel.setOpaque(false);
 
-        JButton evaluateBtn = createStyledButton("Valuta");
+        JButton evaluateBtn = ButtonFactory.createButton("Valuta");
         evaluateBtn.addActionListener(e -> evaluateSelectedTeam());
         buttonPanel.add(evaluateBtn);
 
-        JButton closeBtn = createStyledButton("Chiudi");
+        JButton closeBtn = ButtonFactory.createButton("Chiudi");
         closeBtn.addActionListener(e -> dispose());
         buttonPanel.add(closeBtn);
 
@@ -127,28 +127,5 @@ public class ValutaTeamGUI extends JFrame {
         }
     }
 
-    private JButton createStyledButton(String text) {
-        JButton btn = new JButton(text);
-        btn.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        btn.setBackground(new Color(70, 130, 180));
-        btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false);
-        btn.setBorder(new RoundedBorder(10));
-        btn.setOpaque(true);
-        btn.setPreferredSize(new Dimension(120, 40));
-        return btn;
-    }
 
-    private static class RoundedBorder extends AbstractBorder {
-        private final int radius;
-        public RoundedBorder(int radius) { this.radius = radius; }
-        @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(Color.WHITE);
-            g2.setStroke(new BasicStroke(2));
-            g2.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
-        }
-    }
 }

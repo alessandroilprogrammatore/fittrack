@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import gui.ButtonFactory;
 
 public class SignIn extends JFrame {
     private final Controller controller;
@@ -70,7 +71,9 @@ public class SignIn extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setOpaque(false);
 
-        JButton loginBtn = createStyledButton("Accedi");
+        JButton loginBtn = ButtonFactory.createButton("Accedi");
+        loginBtn.setPreferredSize(new Dimension(140,44));
+        loginBtn.setFont(new Font("Segoe UI", Font.BOLD,18));
         loginBtn.addActionListener(e -> onLogin());
         // Hover verde
         Color loginOrig = loginBtn.getBackground();
@@ -80,7 +83,9 @@ public class SignIn extends JFrame {
         });
         buttonPanel.add(loginBtn);
 
-        JButton regBtn = createStyledButton("Registrati");
+        JButton regBtn = ButtonFactory.createButton("Registrati");
+        regBtn.setPreferredSize(new Dimension(140,44));
+        regBtn.setFont(new Font("Segoe UI", Font.BOLD,18));
         regBtn.addActionListener(e -> {
             dispose();
             new Registrazione(controller);
@@ -116,17 +121,6 @@ public class SignIn extends JFrame {
             MainMenuGUI menu = new MainMenuGUI(controller);
             menu.setVisible(true);
         }
-    }
-
-    private JButton createStyledButton(String text) {
-        JButton btn = new JButton(text);
-        btn.setPreferredSize(new Dimension(140, 44));
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        btn.setBackground(new Color(70, 130, 180));
-        btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false);
-        btn.setOpaque(true);
-        return btn;
     }
 
     // Gradiente di sfondo

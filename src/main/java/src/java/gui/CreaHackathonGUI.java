@@ -6,6 +6,7 @@ import model.Hackathon;
 
 import javax.swing.*;
 import java.awt.*;
+import gui.ButtonFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -53,7 +54,7 @@ public class CreaHackathonGUI extends JFrame {
         panel.add(teamSizeSpinner, gbc);
 
         gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2;
-        JButton createButton = new JButton("Crea Hackathon");
+        JButton createButton = ButtonFactory.createButton("Crea Hackathon");
         createButton.addActionListener(e -> onCreate());
         panel.add(createButton, gbc);
 

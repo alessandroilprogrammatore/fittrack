@@ -5,6 +5,7 @@ import model.Team;
 
 import javax.swing.*;
 import java.awt.*;
+import gui.ButtonFactory;
 
 /**
  * Mostra i dettagli del team dell'utente e permette di aggiungere membri.
@@ -49,7 +50,7 @@ public class TeamGUI extends JFrame {
 
         JPanel invitePanel = new JPanel(new FlowLayout());
         JTextField emailField = new JTextField(15);
-        JButton inviteBtn = new JButton("Aggiungi membro");
+        JButton inviteBtn = ButtonFactory.createButton("Aggiungi membro");
         inviteBtn.addActionListener(e -> {
             String email = emailField.getText().trim();
             if (email.isEmpty()) return;

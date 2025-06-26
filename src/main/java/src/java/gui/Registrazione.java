@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import gui.ButtonFactory;
 
 public class Registrazione extends JFrame {
     private final Controller controller;
@@ -86,7 +87,10 @@ public class Registrazione extends JFrame {
         mainPanel.add(formPanel, BorderLayout.CENTER);
 
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,20,10)); btnPanel.setOpaque(false);
-        JButton regBtn = createStyledButton("Registrati"); regBtn.addActionListener(e -> onRegister());
+        JButton regBtn = ButtonFactory.createButton("Registrati");
+        regBtn.setPreferredSize(new Dimension(180,52));
+        regBtn.setFont(new Font("Segoe UI", Font.BOLD,20));
+        regBtn.addActionListener(e -> onRegister());
         // Hover: green for reg
         Color regOrig = regBtn.getBackground();
         regBtn.addMouseListener(new MouseAdapter() {
@@ -95,7 +99,10 @@ public class Registrazione extends JFrame {
         });
         btnPanel.add(regBtn);
 
-        JButton cancelBtn = createStyledButton("Annulla"); cancelBtn.addActionListener(e -> { dispose(); new SignIn(controller); });
+        JButton cancelBtn = ButtonFactory.createButton("Annulla");
+        cancelBtn.setPreferredSize(new Dimension(180,52));
+        cancelBtn.setFont(new Font("Segoe UI", Font.BOLD,20));
+        cancelBtn.addActionListener(e -> { dispose(); new SignIn(controller); });
         // Hover: red for cancel
         Color cancelOrig = cancelBtn.getBackground();
         cancelBtn.addMouseListener(new MouseAdapter() {
@@ -126,15 +133,6 @@ public class Registrazione extends JFrame {
             JOptionPane.showMessageDialog(this, "Registrazione avvenuta.", "Successo", JOptionPane.INFORMATION_MESSAGE);
             dispose(); new SignIn(controller);
         }
-    }
-
-    private JButton createStyledButton(String text) {
-        JButton btn = new JButton(text);
-        btn.setPreferredSize(new Dimension(180, 52));
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        btn.setBackground(new Color(70, 130, 180)); btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false); btn.setOpaque(true); btn.setContentAreaFilled(true);
-        return btn;
     }
 
     private static class GradientPanel extends JPanel {
