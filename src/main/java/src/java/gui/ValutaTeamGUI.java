@@ -1,5 +1,4 @@
-
-        package gui;
+package gui;
 
 import controller.Controller;
 import model.Team;
@@ -126,6 +125,4 @@ public class ValutaTeamGUI extends JFrame {
                     "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-
 }
