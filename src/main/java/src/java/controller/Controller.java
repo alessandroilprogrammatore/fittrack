@@ -3,30 +3,36 @@
 package controller;
 
 import model.*;
-import java.io.*;
+import dao.UtenteDAO;
+import dao.TeamDAO;
+import dao.postgres.PostgresUtenteDAO;
+import dao.postgres.PostgresTeamDAO;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Controller centralizza la logica applicativa e persistenza in file.
+ * Controller centralizza la logica applicativa e interagisce con il database
+ * tramite oggetti DAO.
  */
-public class Controller implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Controller {
 
     // Collezioni di dominio
-    private List<Utente> utenti;
+    private UtenteDAO utenteDAO;
     private List<Documento> docs;
     private List<Voto> voti;
     private List<Invito> inviti;
+    private TeamDAO teamDAO;
     private List<Team> teams;
     private List<Hackathon> hacks;
 
     private transient Utente currentUser;
 
     public Controller() {
-        this.utenti = new ArrayList<>();
+        this.utenteDAO = new PostgresUtenteDAO();
+        this.teamDAO = new PostgresTeamDAO();
         this.docs    = new ArrayList<>();
         this.voti    = new ArrayList<>();
         this.inviti  = new ArrayList<>();
@@ -34,32 +40,7 @@ public class Controller implements Serializable {
         this.hacks   = new ArrayList<>();
     }
 
-    /**
-     * Carica stato da file, o nuovo controller se non esiste.
-     */
-    public static Controller loadState() {
-        File file = new File("data/state.dat");
-        if (!file.exists()) return new Controller();
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
-            return (Controller) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return new Controller();
-        }
-    }
 
-    /**
-     * Salva stato su file.
-     */
-    public void saveState() {
-        new File("data").mkdirs();
-        try (ObjectOutputStream out = new ObjectOutputStream(
-                new FileOutputStream("data/state.dat"))) {
-            out.writeObject(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Registra un nuovo utente con ruolo: Partecipante, Organizzatore o Giudice.
@@ -69,9 +50,12 @@ public class Controller implements Serializable {
                                  String email,
                                  String password,
                                  String ruolo) {
-        boolean exists = utenti.stream()
-                .anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
-        if (exists) return null;
+        try {
+            Utente exists = utenteDAO.findByEmail(email);
+            if (exists != null) return null;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         Utente u;
         switch (ruolo) {
@@ -79,7 +63,11 @@ public class Controller implements Serializable {
             case "Giudice":      u = new Giudice(nome, cognome, null, email, password);      break;
             default:               u = new Partecipante(nome, cognome, null, email, password); break;
         }
-        utenti.add(u);
+        try {
+            utenteDAO.save(u);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return u;
     }
 
@@ -87,14 +75,16 @@ public class Controller implements Serializable {
      * Login con email e password.
      */
     public Utente login(String email, String pwd) {
-        Optional<Utente> opt = utenti.stream()
-                .filter(u -> u.checkCredentials(email, pwd))
-                .findFirst();
-        if (opt.isPresent()) {
-            currentUser = opt.get();
-            return currentUser;
+        try {
+            Utente u = utenteDAO.findByEmail(email);
+            if (u != null && u.checkCredentials(email, pwd)) {
+                currentUser = u;
+                return currentUser;
+            }
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     public Utente getCurrentUser() {
@@ -178,6 +168,11 @@ public class Controller implements Serializable {
         if (currentUser instanceof Partecipante) {
             t.addPartecipante((Partecipante) currentUser);
             teams.add(t);
+            try {
+                teamDAO.save(t);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -199,14 +194,23 @@ public class Controller implements Serializable {
      */
     public Team creaTeam(String nome) {
         if (currentUser instanceof Partecipante) {
-            // gia membro?
             for (Team t : teams) {
                 if (t.getPartecipanti().contains(currentUser)) return null;
                 if (t.getNome().equalsIgnoreCase(nome)) return null;
             }
+            try {
+                if (teamDAO.findByName(nome) != null) return null;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             Team t = new Team(nome);
             t.addPartecipante((Partecipante) currentUser);
             teams.add(t);
+            try {
+                teamDAO.save(t);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             return t;
         }
         return null;
@@ -218,14 +222,16 @@ public class Controller implements Serializable {
     public boolean aggiungiMembro(Team team, String email) {
         if (!(currentUser instanceof Partecipante)) return false;
         if (team.getPartecipanti().size() >= 4) return false;
-        Optional<Utente> opt = utenti.stream()
-                .filter(u -> u instanceof Partecipante && u.getEmail().equalsIgnoreCase(email))
-                .findFirst();
-        if (opt.isPresent() && !team.getPartecipanti().contains(opt.get())) {
-            team.addPartecipante((Partecipante) opt.get());
-            return true;
+        try {
+            Utente u = utenteDAO.findByEmail(email);
+            if (u instanceof Partecipante && !team.getPartecipanti().contains(u)) {
+                team.addPartecipante((Partecipante) u);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return false;
     }
     public List<Team> getTeams(Partecipante p) {
         if (currentUser instanceof Partecipante && currentUser.equals(p)) {
