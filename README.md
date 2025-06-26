@@ -27,6 +27,8 @@ mkdir -p out
 javac -d out $(find src/main/java -name "*.java")
 # Include the PostgreSQL driver when running manually
 java -cp out:$HOME/.m2/repository/org/postgresql/postgresql/42.7.2/postgresql-42.7.2.jar model.Main
+# or rely on Maven to assemble the classpath
+mvn exec:java -Dexec.mainClass=model.Main
 ```
 
 The application now uses a PostgreSQL database. Configure the connection using the
