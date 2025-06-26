@@ -10,8 +10,10 @@ import gui.MainMenuGUI;
  */
 public class Main {
     public static void main(String[] args) {
-        // Crea il controller che utilizza il database
-        Controller ctrl = new Controller();
+        // Carica lo stato dell'applicazione (o ne crea uno nuovo)
+        Controller ctrl = Controller.loadState();
+        // Aggiunge uno shutdown hook per salvare lo stato alla chiusura
+        Runtime.getRuntime().addShutdownHook(new Thread(ctrl::saveState));
 
         // Avvia la GUI principale sul thread Swing
         SwingUtilities.invokeLater(() -> {
