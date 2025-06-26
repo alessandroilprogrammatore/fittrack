@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import gui.ButtonFactory;
 
 public class InvitiPartecipanteGUI extends JFrame {
     private final Partecipante partecipante;
@@ -47,9 +48,9 @@ public class InvitiPartecipanteGUI extends JFrame {
                 row.add(lbl, BorderLayout.CENTER);
 
                 JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-                JButton accetta = new JButton("Accetta");
+                JButton accetta = ButtonFactory.createButton("Accetta");
                 accetta.addActionListener((ActionEvent e) -> handle(invito, true));
-                JButton rifiuta = new JButton("Rifiuta");
+                JButton rifiuta = ButtonFactory.createButton("Rifiuta");
                 rifiuta.addActionListener((ActionEvent e) -> handle(invito, false));
                 btns.add(accetta);
                 btns.add(rifiuta);

@@ -4,6 +4,7 @@ import controller.Controller;
 import model.Utente;
 import javax.swing.*;
 import java.awt.*;
+import gui.ButtonFactory;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -56,7 +57,7 @@ public class ProfiloUtenteGUI extends JFrame {
         gbc.gridx=1; panel.add(pwdField, gbc);
 
         gbc.gridy=++row; gbc.gridx=0; gbc.gridwidth=2;
-        JButton save = new JButton("Salva modifiche");
+        JButton save = ButtonFactory.createButton("Salva modifiche");
         save.addActionListener(e -> onSave());
         panel.add(save, gbc);
 

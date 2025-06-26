@@ -2,10 +2,10 @@
 package gui;
 
 import controller.Controller;
-import model.Team;
 
 import javax.swing.*;
 import java.awt.*;
+import gui.ButtonFactory;
 
 public class CreaTeamGUI extends JFrame {
     private final Controller controller;
@@ -30,7 +30,7 @@ public class CreaTeamGUI extends JFrame {
         panel.add(nomeField, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
-        JButton createButton = new JButton("Crea Team");
+        JButton createButton = ButtonFactory.createButton("Crea Team");
         createButton.addActionListener(e -> onCreate());
         panel.add(createButton, gbc);
 
@@ -45,8 +45,13 @@ public class CreaTeamGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Inserisci un nome per il team.", "Errore di input", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        controller.creaTeam(nome);
-        JOptionPane.showMessageDialog(this, "Team creato con successo.", "Successo", JOptionPane.INFORMATION_MESSAGE);
-        dispose();
+        if (controller.creaTeam(nome) == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Impossibile creare il team. Nome già usato o sei già in un team.",
+                    "Errore", JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Team creato con successo.", "Successo", JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+        }
     }
 }
